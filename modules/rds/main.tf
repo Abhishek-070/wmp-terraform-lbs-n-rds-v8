@@ -1,0 +1,27 @@
+resource "aws_db_parameter_group" "main" {
+  name   = "wmp-${var.env}"
+  family = "postgres16"
+}
+
+resource "aws_db_subnet_group" "main" {
+  name       = "wmp-${var.env}"
+  subnet_ids = var.subnet_ids
+  tags = {
+    Name = "My DB subnet group"
+  }
+}
+
+
+resource "aws_db_instance" "default" {
+  allocated_storage    = var.allocated_storage
+  db_name              = "default_dummy"
+  engine               = "postgres"
+  engine_version       = "16.13"
+  instance_class       = "db.t3.micro"
+  username             = "wmpuser"
+  password             = "WmpUser#1234"
+  parameter_group_name = aws_db_parameter_group.main.name
+  skip_final_snapshot  = true
+  db_subnet_group_name = aws_db_subnet_group.main.name
+  # identifier = "wmp-${var.env}"
+}

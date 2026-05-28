@@ -34,7 +34,7 @@ resource "aws_security_group" "main" {
 
 }
 
-resource "aws_db_instance" "default" {
+resource "aws_db_instance" "main" {
   # identifier = "wmp-${var.env}"
 
   allocated_storage    = var.allocated_storage
@@ -48,4 +48,13 @@ resource "aws_db_instance" "default" {
   skip_final_snapshot  = true
   db_subnet_group_name = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.main.id]
+}
+
+resource "null_resource" "schema_load" {
+  provisioner "local-exec" {
+    command = <<EOF
+curl -o global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+PGPASSWORD='WmpUser#1234' /usr/pgsql-16/bin/psql  'host=${aws_db_instance.main.address} port=5432 dbname=default_dummy user=wmpuser sslmode=verify-full sslrootcert=./global-bundle.pem' <${path.module}/setup.sql
+EOF
+  }
 }

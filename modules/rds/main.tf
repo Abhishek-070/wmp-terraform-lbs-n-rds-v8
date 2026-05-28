@@ -7,12 +7,36 @@ resource "aws_db_subnet_group" "main" {
   name       = "wmp-${var.env}"
   subnet_ids = var.subnet_ids
   tags = {
-    Name = "My DB subnet group"
+    Name = "wmp-${var.env}"
   }
 }
 
+resource "aws_security_group" "main" {
+
+  name = "wmp-rds-${var.env}"
+
+   ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "wmp-rds-${var.env}"
+  }
+
+}
 
 resource "aws_db_instance" "default" {
+  # identifier = "wmp-${var.env}"
+
   allocated_storage    = var.allocated_storage
   db_name              = "default_dummy"
   engine               = "postgres"
@@ -23,5 +47,5 @@ resource "aws_db_instance" "default" {
   parameter_group_name = aws_db_parameter_group.main.name
   skip_final_snapshot  = true
   db_subnet_group_name = aws_db_subnet_group.main.name
-  # identifier = "wmp-${var.env}"
+  vpc_security_group_ids = [aws_security_group.main.id]
 }

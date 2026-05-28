@@ -1,26 +1,3 @@
-resource "aws_security_group" "instance" {
-
-  name = "${var.component}-${var.env}-instance"
-
-   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.component}-${var.env}-instance"
-  }
-
-}
-
 resource "aws_security_group" "alb" {
 
   name = "${var.component}-${var.env}-alb"

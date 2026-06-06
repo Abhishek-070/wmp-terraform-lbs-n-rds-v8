@@ -68,6 +68,7 @@ resource "aws_launch_template" "main" {
     {
       ENV       = var.env
       COMPONENT = var.component
+      postgres_rds_address= var.postgres_rds_address
     }
   ))
 
